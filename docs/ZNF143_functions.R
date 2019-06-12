@@ -186,7 +186,7 @@ lattice.pairwise.scatter <- function(rep1, rep2, file = 'xyplot_correlations.pdf
     data.cat = data.frame(matrix(nrow = 0, ncol =3))
     colnames(data.cat) = c('rep1', 'rep2', 'cond')
     for (i in 1:ncol(rep1.corr)) {
-        lattice.form = data.frame(rep1.corr[,i], rep2.corr[,i], colnames(rep1.corr[i]))
+        lattice.form = data.frame(rep1[,i], rep2[,i], colnames(rep1[i]))
         colnames(lattice.form) = c('rep1', 'rep2', 'cond')
         data.cat = rbind(data.cat, lattice.form)
     }
