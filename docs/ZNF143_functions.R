@@ -112,7 +112,7 @@ plotPCAlattice <- function(df, file = 'PCA_lattice.pdf', reps = 3) {
         }
     df$group = gsub('_', ' ', df$group)
     pdf(file, width=6, height=6, useDingbats=FALSE)
-    print(xyplot(PC2 ~ PC1, groups = group, data=df,
+    print(xyplot(PC2 ~ PC1, groups = name, data=df,
            xlab = paste('PC1: ', perVar[1], '% variance', sep = ''),
            ylab = paste('PC2: ', perVar[2], '% variance', sep = ''),
            par.settings = list(superpose.symbol = list(pch = c(20), col=colpal)),
