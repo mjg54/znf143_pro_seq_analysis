@@ -77,49 +77,51 @@ run.deseq.table <- function(mat) {
   return(dds)
 }
 
-plotPCAlattice <- function(df, file = 'PCA_lattice.pdf', reps = 3) {  
-    perVar = round(100 * attr(df, "percentVar"))
-#identical replicate color, transparency difference
-    if (reps == 2) {
-    colpal = sort(c(rainbow(nrow(df)/2, start = 0.01, end = 0.8, alpha = 0.9),
-                    rainbow(nrow(df)/2, start = 0.01, end = 0.8, alpha = 0.7)))
+plotPCAlattice <- function(df, file = 'PCA_lattice.pdf') {  
+  perVar = round(100 * attr(df, "percentVar"))
+  df = data.frame(cbind(df, sapply(strsplit(as.character(df$name), '_rep'), '[', 1)))
+  colnames(df) = c(colnames(df)[1:(ncol(df)-1)], 'unique_condition')
+  print(df)
+  #get colors and take away the hex transparency
+  color.x = substring(rainbow(length(unique(df$unique_condition))), 1,7) 
+  
+  df$color = NA
+  df$alpha.x = NA
+  df$alpha.y = NA
+  df$colpal = NA
+  
+  for (i in 1:length(unique(df$unique_condition))) {
+    
+    df[df$unique_condition == unique(df$unique_condition)[[i]],]$color = color.x[i]   
+    #gives replicates for unique condition
+    reps_col<- df[df$unique_condition == unique(df$unique_condition)[[i]],]
+    #gives number of replicates in unique condition
+    replicates.x = nrow(reps_col)
+    alx <- rev(seq(0.2, 1, length.out = replicates.x))
+    
+    #count transparency(alx), convert alx to hex(aly), combain color and transparency(cp)
+    for(rep in 1:replicates.x) {
+    
+      na <- reps_col[rep, ]$name
+      df[df$name == na, ]$alpha.x = alx[rep]
+      aly = as.hexmode(round(alx * 255))
+      df[df$name == na, ]$alpha.y = aly[rep]
+      cp = paste0(color.x[i], aly)
+      df[df$name == na, ]$colpal = cp[rep]
+      #print(df)
     }
-    if (reps == 3) {
-        colpal = sort(c(rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.9),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.7),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.5)))
-    }
-    if (reps == 4) {
-        colpal = sort(c(rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.9),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.75),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.60),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.45)))
-    }
-    if (reps == 5) {
-        colpal = sort(c(rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.9),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.75),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.60),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.45),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.30)))
-    }
-    if (reps == 6) {
-        colpal = sort(c(rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.9),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.75),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.60),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.45),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.30),
-                    rainbow(nrow(df)/3, start = 0.01, end = 0.8, alpha = 0.15)))
-        }
-    df$group = gsub('_', ' ', df$group)
-    pdf(file, width=6, height=6, useDingbats=FALSE)
-    print(xyplot(PC2 ~ PC1, groups = name, data=df,
-           xlab = paste('PC1: ', perVar[1], '% variance', sep = ''),
-           ylab = paste('PC2: ', perVar[2], '% variance', sep = ''),
-           par.settings = list(superpose.symbol = list(pch = c(20), col=colpal)),
-           pch = 20,
-           auto.key = TRUE,
-           col = colpal))
-dev.off()
+  }
+  colpal = df$colpal
+  df$name = gsub('_', ' ', df$name)
+  pdf(file, width=6, height=6, useDingbats=FALSE)
+  print(xyplot(PC2 ~ PC1, groups = name, data=df,
+               xlab = paste('PC1: ', perVar[1], '% variance', sep = ''),
+               ylab = paste('PC2: ', perVar[2], '% variance', sep = ''),
+               par.settings = list(superpose.symbol = list(pch = c(20), col=colpal)),
+               pch = 20,
+               auto.key = TRUE,
+               col = colpal))
+  dev.off()
 }
 
 
