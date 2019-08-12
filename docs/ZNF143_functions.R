@@ -118,7 +118,7 @@ plotPCAlattice <- function(df, file = 'PCA_lattice.pdf') {
                xlab = paste('PC1: ', perVar[1], '% variance', sep = ''),
                ylab = paste('PC2: ', perVar[2], '% variance', sep = ''),
                par.settings = list(superpose.symbol = list(pch = c(20), col=colpal)),
-               pch = 20,
+               pch = 20, cex = 1.7,
                auto.key = TRUE,
                col = colpal))
   dev.off()
