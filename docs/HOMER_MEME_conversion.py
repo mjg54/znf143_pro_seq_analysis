@@ -11,7 +11,7 @@ def matrix(filename, outfilename_prefix):
     outfile.write("\n")
     outfile.write('%s\n'%("strands: + -"))
     outfile.write("\n")
-    outfile.write('%s\n'%("A 0.212 C 0.288 G 0.288 T 0.212"))
+    outfile.write('%s\n'%("A 0.288 C 0.212 G 0.212 T 0.288"))
     count = 0 
     while 1:
         line = infile.readline()
