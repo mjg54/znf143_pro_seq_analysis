@@ -1132,33 +1132,41 @@ run.deseq.list.any <- function(mat, unt = 2, trt =2) {
   return(res)
 }
 
+categorize.deseq.df <- function(df, fdr = 0.1, log2fold = 0.0, treat
+= 'Auxin') {
 
+     df.activated = data.frame(matrix(nrow = 0, ncol = 0))
+     df.repressed = data.frame(matrix(nrow = 0, ncol = 0))
 
-categorize.deseq.df <- function(df, fdr = 0.05, log2fold = 0.0, treat = 'Auxin') {
-    df.activated = df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange > log2fold,]
-    
-    df.repressed = df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange < -log2fold,]
+     if (nrow(df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold,]) != 0) {
+     	df.activated = df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold,]
+	df.activated$response = paste(treat, 'Activated')
+	}
+
+     if (nrow(df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold,]) != 0) {
+     	df.repressed = df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold,]
+	df.repressed$response = paste(treat, 'Repressed')
+	}
     
     df.unchanged = df[df$padj > 0.5 & !is.na(df$padj) & abs(df$log2FoldChange) < 0.25,]
+    df.unchanged$response = paste(treat, 'Unchanged')
+
+    df.dregs = df[!(df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold) &
+                  !(df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold) &
+                  !(df$padj > 0.5 & !is.na(df$padj) &
+    		  abs(df$log2FoldChange) < 0.25), ]
+    df.dregs$response = paste(treat, 'All Other Genes')
     
-    df.dregs = df[!(df$padj < fdr & !is.na(df$padj) & df$log2FoldChange > log2fold) &
-                  !(df$padj < fdr & !is.na(df$padj) & df$log2FoldChange < -log2fold) &
-                  !(df$padj > 0.5 & !is.na(df$padj) & abs(df$log2FoldChange) < 0.25), ]
-    df.unchanged$arfauxin = paste(treat, 'Unchanged')
-    df.activated$arfauxin = paste(treat, 'Activated')
-    df.repressed$arfauxin = paste(treat, 'Repressed')
-    df.dregs$arfauxin = paste(treat, 'All Other Genes')
     df.effects.lattice = 
     rbind(df.activated, 
           df.unchanged, 
           df.repressed, 
           df.dregs)
-    df.effects.lattice$arfauxin = factor(df.effects.lattice$arfauxin)
-    df.effects.lattice$arfauxin = relevel(df.effects.lattice$arfauxin, ref = paste(treat, 'Unchanged'))
-    df.effects.lattice$arfauxin = relevel(df.effects.lattice$arfauxin, ref = paste(treat, 'All Other Genes'))
+    df.effects.lattice$response = factor(df.effects.lattice$response)
+    df.effects.lattice$response = relevel(df.effects.lattice$response, ref = paste(treat, 'Unchanged'))
+    df.effects.lattice$response = relevel(df.effects.lattice$response, ref = paste(treat, 'All Other Genes'))
     return(df.effects.lattice)
 }
-
 
 
 filter.deseq.into.bed <- function(deseq.df, gene.file, cat = 'R1881 Activated') {
