@@ -1138,21 +1138,21 @@ categorize.deseq.df <- function(df, fdr = 0.1, log2fold = 0.0, treat
      df.activated = data.frame(matrix(nrow = 0, ncol = 0))
      df.repressed = data.frame(matrix(nrow = 0, ncol = 0))
 
-     if (nrow(df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold,]) != 0) {
-     	df.activated = df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold,]
+     if (nrow(df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange > log2fold,]) != 0) {
+     	df.activated = df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange > log2fold,]
 	df.activated$response = paste(treat, 'Activated')
 	}
 
-     if (nrow(df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold,]) != 0) {
-     	df.repressed = df[df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold,]
+     if (nrow(df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange < -log2fold,]) != 0) {
+     	df.repressed = df[df$padj < fdr & !is.na(df$padj) & df$log2FoldChange < -log2fold,]
 	df.repressed$response = paste(treat, 'Repressed')
 	}
     
     df.unchanged = df[df$padj > 0.5 & !is.na(df$padj) & abs(df$log2FoldChange) < 0.25,]
     df.unchanged$response = paste(treat, 'Unchanged')
 
-    df.dregs = df[!(df$padj < thresh & !is.na(df$padj) & df$log2FoldChange > log2fold) &
-                  !(df$padj < thresh & !is.na(df$padj) & df$log2FoldChange < -log2fold) &
+    df.dregs = df[!(df$padj < fdr & !is.na(df$padj) & df$log2FoldChange > log2fold) &
+                  !(df$padj < fdr & !is.na(df$padj) & df$log2FoldChange < -log2fold) &
                   !(df$padj > 0.5 & !is.na(df$padj) &
     		  abs(df$log2FoldChange) < 0.25), ]
     df.dregs$response = paste(treat, 'All Other Genes')
