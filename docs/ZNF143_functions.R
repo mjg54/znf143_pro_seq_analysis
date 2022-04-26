@@ -760,7 +760,7 @@ take.relevant.gene.columns <- function(category.overlap.peaks, distance) {
 
 
 filter.deseq.into.bed <- function(deseq.df, gene.file, cat = 'R1881 Activated') {
-    deseq.df = deseq.df[deseq.df$arfauxin == cat,] 
+    deseq.df = deseq.df[deseq.df$response == cat,] 
     x = paste(gene.file[,1], ':', gene.file[,2], '-', gene.file[,3],'_', gene.file[,4], sep='')
     y = gene.file[x %in% rownames(deseq.df),]
     z = get.tss(y)
